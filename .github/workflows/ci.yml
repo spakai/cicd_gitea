@@ -13,8 +13,14 @@ jobs:
         with:
           python-version: '3.x'
       - name: Install dependencies
-        run: pip install pytest flake8 pytest-cov
+        run: pip install pytest flake8 pytest-cov mypy bandit pylint
       - name: Lint
         run: flake8
+      - name: Type check (mypy)
+        run: mypy fib tests
+      - name: Security check (bandit)
+        run: bandit -r fib
+      - name: Static analysis (pylint)
+        run: pylint fib
       - name: Run tests with coverage
         run: pytest --cov=fib --cov-report=term-missing
