@@ -1,5 +1,6 @@
 """Core Fibonacci logic."""
 
+
 def fibonacci(n: int) -> int:
     """Return the nth Fibonacci number.
 
