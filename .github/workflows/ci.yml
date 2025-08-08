@@ -13,8 +13,8 @@ jobs:
         with:
           python-version: '3.x'
       - name: Install dependencies
-        run: pip install pytest flake8
+        run: pip install pytest flake8 pytest-cov
       - name: Lint
         run: flake8
-      - name: Run tests
-        run: pytest
+      - name: Run tests with coverage
+        run: pytest --cov=fib --cov-report=term-missing
