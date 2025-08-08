@@ -1,15 +1,14 @@
-"""Tests for the Fibonacci HTTP API."""
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+"""Tests for the Fibonacci HTTP API."""
+import sys
+from pathlib import Path
 from threading import Thread
 from http.server import HTTPServer
 import json
 import urllib.request
 import urllib.error
-import sys
-from pathlib import Path
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
 from fib.api import FibRequestHandler
 
 
@@ -43,7 +42,7 @@ def test_get_fibonacci_negative() -> None:
     server, thread = start_server()
     url = f"http://{server.server_name}:{server.server_port}/fib/?n=-1"
     try:
-        with urllib.request.urlopen(url) as resp:
+        with urllib.request.urlopen(url):
             # Should raise HTTPError for status >=400
             pass
     except urllib.error.HTTPError as err:

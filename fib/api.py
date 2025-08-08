@@ -24,7 +24,10 @@ class FibRequestHandler(BaseHTTPRequestHandler):
             n = int(params["n"][0])
             value = fibonacci(n)
         except (ValueError, TypeError):
-            self.send_error(400, "invalid n parameter")
+            self.send_error(
+                400,
+                "invalid n parameter"
+            )
             return
 
         body = json.dumps({"n": n, "value": value}).encode()
