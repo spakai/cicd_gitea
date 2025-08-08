@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from fib.core import fibonacci
+from fib.core import fibonacci  # noqa: E402
 
 
 @pytest.mark.parametrize("n,expected", [(0, 0), (1, 1), (5, 5), (10, 55)])
