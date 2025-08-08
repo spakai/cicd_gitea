@@ -1,13 +1,12 @@
 
+
+
 """Tests for the Fibonacci HTTP API."""
-import sys
-from pathlib import Path
 from threading import Thread
 from http.server import HTTPServer
 import json
 import urllib.request
 import urllib.error
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from fib.api import FibRequestHandler
 
 
