@@ -1,6 +1,3 @@
-
-
-
 """Tests for the Fibonacci HTTP API."""
 from threading import Thread
 from http.server import HTTPServer

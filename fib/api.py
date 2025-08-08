@@ -10,7 +10,7 @@ from .core import fibonacci
 class FibRequestHandler(BaseHTTPRequestHandler):
     """Handle GET requests for Fibonacci numbers."""
 
-    def do_GET(self) -> None:  # noqa: N802 (for method name; though no flake8 here)
+    def do_GET(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path != "/fib/":
             self.send_error(404)
