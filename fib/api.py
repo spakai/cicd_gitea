@@ -10,7 +10,12 @@ from .core import fibonacci
 class FibRequestHandler(BaseHTTPRequestHandler):
     """Handle GET requests for Fibonacci numbers."""
 
-    def do_GET(self) -> None:
+    def do_GET(self) -> None:  # pylint: disable=invalid-name
+        """
+        Handle HTTP GET requests for the Fibonacci endpoint.
+        Parses the query string for parameter 'n', validates it,
+        computes the Fibonacci number, and returns the result as JSON.
+        """
         parsed = urlparse(self.path)
         if parsed.path != "/fib/":
             self.send_error(404)
