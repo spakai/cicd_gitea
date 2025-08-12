@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - USER_UID=1000
+      - USER_GID=1000
+
+      # --- DB (SQLite) ---
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__database__PATH=/data/gitea/gitea.db
+
+      # --- Server ---
+      - GITEA__server__PROTOCOL=http
+      - GITEA__server__HTTP_ADDR=0.0.0.0
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__DOMAIN=localhost
+      - GITEA__server__ROOT_URL=http://localhost:3000/
+
+      # --- Actions ---
+      - GITEA__actions__ENABLED=true
+
+      # First boot: allow setup; you can set true later once configured
+      - GITEA__security__INSTALL_LOCK=false
+    ports:
+      - "3000:3000"
+      - "222:22"
+    volumes:
+      - gitea_data:/data
+    restart: unless-stopped
+    # If wget isn't in the image, you can remove this healthcheck or switch to curl
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 30
+
+  runner:
+    profiles: ["runner"]   # start this AFTER you have the token
+    image: gitea/act_runner:latest
+    container_name: gitea-runner
+    depends_on:
+      gitea:
+        condition: service_started    # don't block on healthcheck tools
+    environment:
+      - TZ=Asia/Kuala_Lumpur
+      - GITEA_INSTANCE_URL=http://gitea:3000
+      - GITEA_RUNNER_NAME=docker-runner
+      - RUNNER_REG_TOKEN=${RUNNER_REG_TOKEN}
+    volumes:
+      - ./runner:/runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    entrypoint: ["/bin/sh","-ec"]
+    command: |
+      if [ -z "$$RUNNER_REG_TOKEN" ]; then
+        echo "[runner] RUNNER_REG_TOKEN is empty. Put it in .env and enable the runner profile.";
+        exit 1;
+      fi
+
+      if [ ! -f /runner/config.yaml ]; then
+        act_runner register \
+          --instance "$$GITEA_INSTANCE_URL" \
+          --token "$$RUNNER_REG_TOKEN" \
+          --name "$$GITEA_RUNNER_NAME" \
+          --labels "ubuntu-latest:docker://ubuntu:latest"
+      fi
+
+      exec act_runner daemon
+
+volumes:
+  gitea_data:
